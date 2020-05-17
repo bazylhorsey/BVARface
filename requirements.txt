@@ -3,8 +3,6 @@ torch
 eventlet
 Flask
 Flask-SocketIO
-gevent
-gevent-websocket
 gunicorn
 numpy
 opencv-python

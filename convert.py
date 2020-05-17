@@ -1,25 +1,29 @@
 import csv
 import numpy
-import time
 
 def main():
-    t0 = time.time()
     x_list, y_list = [], []
 
     with open("bvarface/fer_dataset/fer.csv") as file:
         reader = csv.reader(file)
         head = next(reader)
 
-        for (count, row) in enumerate(reader):
+        for (_, row) in enumerate(reader):
+            
             y = int(row[0])
-            if y not in range(3, 6):
+            if y == 3:
+                emo_val = 0
+            if y == 4:
+                emo_val = 1
+            if y == 5:
+                emo_val = 2
+            else:
                 continue
 
             x_list.append(numpy.array(list([int(i) for i in row[1].split()])))
-            y_list.append(y-3)
+            y_list.append(emo_val)
 
-    t1 = time.time()
-    print("Processed! {0}s".format(t1 - t0))
+    print("Processed!")
 
     value = int(len(x_list) * .2)
     train = int(len(x_list) * .8)
@@ -30,14 +34,10 @@ def main():
         (numpy.array(y_list[:train]), numpy.array(y_list[-value:]))
 
     numpy.savez_compressed("bvarface/fer_numpy/train", x_list=x_train, y_list=y_train)
-    print("Training results computed | x: {0}, y: {1}".format(
-        str(x_train.shape), str(y_train.shape)))
 
     numpy.savez_compressed("bvarface/fer_numpy/test", x_list=x_test, y_list=y_test)
-    print("Test results computed | x: {0}, y: {1}".format(
-        str(x_test.shape), str(y_test.shape)))
 
-    print("Convert complete! {0}s".format(time.time() - t1))
+    print("Convert complete!")
 
 
 if __name__ == "__main__":

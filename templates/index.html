@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta content="BVARface" name="title">
+        <meta content="Processing augmented video streams using Flask" name="description">
+
+        <title>BVARface</title>
+        <style>
+            #canvas, #input { display: none; }
+            #output { height: 480px; width: 640px; }
+        </style>
+    </head>
+
+    <body>
+        <div>
+            <video autoplay="true" id="input"></video>
+            <canvas id="canvas"></canvas>
+            <img id="output" src="{{ url_for("output") }}">
+        </div>
+
+        <script
+			        src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+			        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+              crossorigin="anonymous">
+        </script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+        <script> 
+            var socketio = io.connect(location.origin);
+
+            var mediaParams = {
+                video: { 
+                    width: { min: 640 }, height: { min: 480 }
+                }
+            };
+
+            $(document).ready(function() {
+                let canvas = document.querySelector("#canvas");
+                let input = document.querySelector("#input");
+
+                let result = canvas.getContext("2d");
+        
+                function send() {
+                  result.drawImage(input, 0, 0, input.videoWidth, input.videoHeight, 0, 0, 300, 150);
+                  socketio.emit("send", canvas.toDataURL("img/jpeg"));
+                }
+              
+                socketio.on("conn", function() {
+                  console.log("Connected to BVARface server.");
+                });
+              
+              
+                navigator.mediaDevices.getUserMedia(mediaParams).then(function(stream) {
+                  input.srcObject = stream;
+              
+                  setInterval(function () { //20FPS
+                    if (stream) send();
+                  }, 50);
+                }).catch(function(e) {
+                  console.log(e);
+                });
+          });
+          </script>
+    </body>
+</html>

@@ -58,7 +58,6 @@ def main():
     start = model.get("step", 0)
     for step in range(start, start+20):
         curr_loss = 0.
-        print("loop1")
         for step, data in enumerate(load, 0):
             images = Variable(data["image"].float())
             labels = Variable(data["label"].long())
